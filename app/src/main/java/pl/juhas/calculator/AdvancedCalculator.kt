@@ -248,17 +248,57 @@ class AdvancedCalculator : AppCompatActivity() {
         val currentText: String = display.text.toString()
 
         if (currentText.isNotEmpty()) {
-            val regex = Regex("(-?\\d+\\.?\\d*)$") // Find the last number (integer or decimal)
-            val match = regex.find(currentText)
+            // First, check for operators at the end
+            val operatorPattern = Regex("([-+*/])(-?)(\\d+\\.?\\d*)$")
+            val match = operatorPattern.find(currentText)
 
             if (match != null) {
-                val lastNumber = match.value.toDouble() // Convert to number
-                val newNumber = -lastNumber // Negate it
-                val newText = currentText.replaceRange(match.range, newNumber.toString().removeSuffix(".0")) // Keep integers clean
+                // We found an operator followed by a number (possibly with a negative sign)
+                val operator = match.groupValues[1]  // The main operator (-, +, *, /)
+                val signPart = match.groupValues[2]  // Possible negative sign after the operator
+                val number = match.groupValues[3]    // The number after the operator and sign
 
-                display.text = newText
-                val resultPreview: TextView = findViewById(R.id.resultPreview)
-                resultPreview.text = evaluate(newText).toString()
+                // Handle different operator cases
+                if (operator == "+" || operator == "-") {
+                    // For + and -, toggle the operator
+                    val newOperator = if (operator == "-") "+" else "-"
+                    val prefixEndIndex = match.range.first
+                    val newText = currentText.substring(0, prefixEndIndex) + newOperator + number
+
+                    display.text = newText
+                    val resultPreview: TextView = findViewById(R.id.resultPreview)
+                    resultPreview.text = evaluate(newText).toString()
+                } else if (operator == "*" || operator == "/") {
+                    // For * and /, toggle the presence of negative sign
+                    val prefixEndIndex = match.range.first + 1  // +1 to include the operator
+                    val newText: String
+
+                    if (signPart == "-") {
+                        // If negative, remove the negative sign
+                        newText = currentText.substring(0, prefixEndIndex) + number
+                    } else {
+                        // If positive, add a negative sign
+                        newText = currentText.substring(0, prefixEndIndex) + "-" + number
+                    }
+
+                    display.text = newText
+                    val resultPreview: TextView = findViewById(R.id.resultPreview)
+                    resultPreview.text = evaluate(newText).toString()
+                }
+            } else {
+                // No operator found, checking for a single number
+                val singleNumberPattern = Regex("^(-?\\d+\\.?\\d*)$")
+                val singleMatch = singleNumberPattern.find(currentText)
+
+                if (singleMatch != null) {
+                    // Toggle the sign of the single number
+                    val number = singleMatch.value.toDouble()
+                    val newNumber = -number
+                    display.text = newNumber.toString().removeSuffix(".0")
+
+                    val resultPreview: TextView = findViewById(R.id.resultPreview)
+                    resultPreview.text = evaluate(newNumber.toString()).toString()
+                }
             }
         }
     }
@@ -337,28 +377,3 @@ class AdvancedCalculator : AppCompatActivity() {
         }
     }
 }
-
-
-//        val context = Context.enter()
-//        try {
-//            context.optimizationLevel = -1
-//            context.setLanguageVersion(Context.VERSION_ES6)
-//            val scope: Scriptable = context.initStandardObjects()
-//
-//            val result = context.evaluateString(scope, expression, "script", 1, null).toString()
-//            val parsedResult = result.toDoubleOrNull()
-//
-//            if (parsedResult != null) {
-//                if (parsedResult.isInfinite() || parsedResult.isNaN()) {
-//                    Toast.makeText(this, "Nie dzielimy przez ZERO!", Toast.LENGTH_SHORT).show()
-//                    return ""
-//                }
-//                return parsedResult.toString().trimEnd('0').trimEnd('.')
-//            }
-//            return ""
-//        } catch (_: Exception) {
-//            return ""
-//        } finally {
-//            Context.exit()
-//        }
-

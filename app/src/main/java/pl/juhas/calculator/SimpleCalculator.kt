@@ -8,9 +8,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import org.mozilla.javascript.Context
-import org.mozilla.javascript.Scriptable
-import java.util.Locale
+import net.objecthunter.exp4j.ExpressionBuilder
+
+import kotlin.math.abs
+
 
 class SimpleCalculator : AppCompatActivity() {
 
@@ -168,15 +169,60 @@ class SimpleCalculator : AppCompatActivity() {
     fun onSignClick() {
         val display: TextView = findViewById(R.id.display)
         val currentText: String = display.text.toString()
+
         if (currentText.isNotEmpty()) {
-            val newText: String = if (currentText.startsWith("-")) {
-                currentText.substring(1)
+            // First, check for operators at the end
+            val operatorPattern = Regex("([-+*/])(-?)(\\d+\\.?\\d*)$")
+            val match = operatorPattern.find(currentText)
+
+            if (match != null) {
+                // We found an operator followed by a number (possibly with a negative sign)
+                val operator = match.groupValues[1]  // The main operator (-, +, *, /)
+                val signPart = match.groupValues[2]  // Possible negative sign after the operator
+                val number = match.groupValues[3]    // The number after the operator and sign
+
+                // Handle different operator cases
+                if (operator == "+" || operator == "-") {
+                    // For + and -, toggle the operator
+                    val newOperator = if (operator == "-") "+" else "-"
+                    val prefixEndIndex = match.range.first
+                    val newText = currentText.substring(0, prefixEndIndex) + newOperator + number
+
+                    display.text = newText
+                    val resultPreview: TextView = findViewById(R.id.resultPreview)
+                    resultPreview.text = evaluate(newText).toString()
+                } else if (operator == "*" || operator == "/") {
+                    // For * and /, toggle the presence of negative sign
+                    val prefixEndIndex = match.range.first + 1  // +1 to include the operator
+                    val newText: String
+
+                    if (signPart == "-") {
+                        // If negative, remove the negative sign
+                        newText = currentText.substring(0, prefixEndIndex) + number
+                    } else {
+                        // If positive, add a negative sign
+                        newText = currentText.substring(0, prefixEndIndex) + "-" + number
+                    }
+
+                    display.text = newText
+                    val resultPreview: TextView = findViewById(R.id.resultPreview)
+                    resultPreview.text = evaluate(newText).toString()
+                }
             } else {
-                "-$currentText"
+                // No operator found, checking for a single number
+                val singleNumberPattern = Regex("^(-?\\d+\\.?\\d*)$")
+                val singleMatch = singleNumberPattern.find(currentText)
+
+                if (singleMatch != null) {
+                    // Toggle the sign of the single number
+                    val number = singleMatch.value.toDouble()
+                    val newNumber = -number
+                    display.text = newNumber.toString().removeSuffix(".0")
+
+                    val resultPreview: TextView = findViewById(R.id.resultPreview)
+                    resultPreview.text = evaluate(newNumber.toString()).toString()
+                }
             }
-            display.text = newText
-            val resultPreview: TextView = findViewById(R.id.resultPreview)
-            resultPreview.text = evaluate(newText).toString()
         }
     }
 
@@ -203,27 +249,33 @@ class SimpleCalculator : AppCompatActivity() {
     }
 
     fun evaluate(expression: String): String {
-        val context = Context.enter()
         try {
-            context.optimizationLevel = -1
-            context.setLanguageVersion(Context.VERSION_ES6)
-            val scope: Scriptable = context.initStandardObjects()
-            val result = context.evaluateString(scope, expression, "script", 1, null).toString()
-
-            val parsedResult = result.toDoubleOrNull()
-
-            if (parsedResult != null) {
-                if (parsedResult.isInfinite() || parsedResult.isNaN()) {
-                    Toast.makeText(this, "Nie dzielimy przez ZERO!", Toast.LENGTH_SHORT).show()
-                    return ""
-                }
-                return String.format(Locale.US, "%.3f", parsedResult).trimEnd('0').trimEnd('.')
+            if (expression.contains("/0")) {
+                Toast.makeText(this, "Nie dzielimy przez ZERO!", Toast.LENGTH_SHORT).show()
+                return ""
             }
+            // Create an expression builder
+            val expressionBuilder = ExpressionBuilder(expression)
+
+            // Build and evaluate
+            val result = expressionBuilder.build().evaluate()
+
+            return if (result.isNaN() || result.isInfinite()) {
+                ""
+            } else {
+                // Check if very close to common exact values
+                val epsilon = 1e-14
+                val finalResult = when {
+                    abs(result - 0.5) < epsilon -> 0.5
+                    abs(result - 1.0) < epsilon -> 1.0
+                    abs(result - 0.0) < epsilon -> 0.0
+                    // Add other common values as needed
+                    else -> result
+                }
+                finalResult.toString().trimEnd('0').trimEnd('.')
+            }
+        } catch (e: Exception) {
             return ""
-        } catch (_: Exception) {
-            return ""
-        } finally {
-            Context.exit()
         }
     }
 }
