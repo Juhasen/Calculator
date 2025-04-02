@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base Button Style -->
+    <style name="BaseButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/rounded_button</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:autoSizeTextType">uniform</item>
+        <item name="android:autoSizeMaxTextSize">30sp</item>
+    </style>
+
+    <!-- Base Circular Button Style -->
+    <style name="BaseCircularButton" parent="BaseButton">
+        <item name="android:background">@drawable/circular_button_number</item>
+    </style>
+
+    <!-- Button Styles for Different Purposes -->
+    <style name="MenuButton" parent="BaseButton">
+        <item name="android:radius">20dp</item>
+    </style>
+
+    <style name="NumberButton" parent="BaseButton">
+        <item name="android:backgroundTint">@color/material_dynamic_neutral20</item>
+        <item name="android:textColor">@color/lime</item>
+    </style>
+
+    <style name="OtherButton" parent="BaseButton">
+        <item name="android:backgroundTint">@color/material_dynamic_neutral20</item>
+        <item name="android:textColor">@color/light_blue</item>
+    </style>
+
+    <style name="CancelButton" parent="BaseButton">
+        <item name="android:textColor">@color/red</item>
+    </style>
+
+    <style name="BackButton" parent="BaseButton">
+        <item name="android:backgroundTint">@color/material_dynamic_neutral20</item>
+        <item name="android:textColor">@color/red</item>
+    </style>
+
+    <!-- Portrait Styles (inherit base styles) -->
+    <style name="MenuButtonPort" parent="BaseButton">
+        <item name="android:radius">20dp</item>
+    </style>
+
+    <style name="NumberButtonPort" parent="BaseButton">
+        <item name="android:backgroundTint">@color/material_dynamic_neutral20</item>
+        <item name="android:textColor">@color/lime</item>
+    </style>
+
+    <style name="OtherButtonPort" parent="BaseButton">
+        <item name="android:backgroundTint">@color/material_dynamic_neutral20</item>
+        <item name="android:textColor">@color/light_blue</item>
+    </style>
+
+    <style name="CancelButtonPort" parent="BaseButton">
+        <item name="android:textColor">@color/red</item>
+    </style>
+
+</resources>
