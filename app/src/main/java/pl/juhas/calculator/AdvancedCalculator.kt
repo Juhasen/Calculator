@@ -118,7 +118,7 @@ class AdvancedCalculator : AppCompatActivity() {
         val button: Button = view as Button
         val buttonText: String = button.text.toString()
         val display: TextView = findViewById(R.id.display)
-        val currentText: String = display.text.toString()
+        var currentText: String = display.text.toString()
 
         val maxLength = if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) 20 else 12
         if (currentText.length >= maxLength) {
@@ -196,23 +196,44 @@ class AdvancedCalculator : AppCompatActivity() {
 
         if (buttonText == "%") {
             if (currentText.isNotEmpty() && currentText.last().isDigit()) {
-                // Find the last number before %
-                val matchResult = Regex("(\\d+(\\.\\d+)?)\\s*$").find(currentText)
+                // Match the last number before % and the operator before it (if any)
+                val matchResult = Regex("([-+/*]?\\s*\\d+(\\.\\d+)?)\\s*$").find(currentText)
                 if (matchResult != null) {
-                    val numberStr = matchResult.value
+                    val numberStr = matchResult.value.trim()
                     val number = numberStr.toDouble()
 
-                    val percentageValue = number * 0.01
-                    // Convert to percentage of the previous number
-                    val newText = currentText.dropLast(numberStr.length) + "$percentageValue"
+                    // Find the previous number for percentage calculation
+                    val operatorMatch = Regex("([-+/*])\\s*\\d+(\\.\\d+)?\\s*$").find(currentText)
+                    if (operatorMatch != null) {
+                        val operator = operatorMatch.groupValues[1]
 
-                    display.text = newText
+                        // Find the number before the operator
+                        val beforeOperatorMatch = Regex("(\\d+(\\.\\d+)?)\\s*[-+/*]").find(currentText)
+                        if (beforeOperatorMatch != null) {
+                            val baseNumber = beforeOperatorMatch.value.dropLast(1).toDouble()
+
+                            val percentageValue = abs((baseNumber * number) / 100.0)
+                            currentText =  "$percentageValue"
+
+                            display.text = currentText
+                            val resultPreview: TextView = findViewById(R.id.resultPreview)
+                            resultPreview.text = evaluate(currentText).toString()
+                            return
+                        }
+                    }
+
+                    // Default behavior if there's no operator before the percentage
+                    val percentageValue = number * 0.01
+                    currentText = currentText.dropLast(numberStr.length) + "$percentageValue"
+
+                    display.text = currentText
                     val resultPreview: TextView = findViewById(R.id.resultPreview)
-                    resultPreview.text = evaluate(newText).toString()
+                    resultPreview.text = evaluate(currentText).toString()
                 }
             }
             return
         }
+
 
 
         val newText: String = currentText + buttonText
