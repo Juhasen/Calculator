@@ -31,7 +31,6 @@
 
     <TextView
         android:id="@+id/display"
-
         android:layout_marginHorizontal="20dp"
         android:autoSizeMinTextSize="15sp"
         android:autoSizeTextType="uniform"
@@ -394,13 +393,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.22" />
+        app:layout_constraintGuide_percent="0.23" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.05" />
+        app:layout_constraintGuide_percent="0.05050505" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
