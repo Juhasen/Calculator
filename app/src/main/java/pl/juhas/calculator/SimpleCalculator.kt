@@ -45,7 +45,7 @@ class SimpleCalculator : AppCompatActivity() {
         val buttonBack: Button = findViewById(R.id.buttonBack)
         val buttonSign: Button = findViewById(R.id.buttonChangeSign)
 
-        // Set click listeners (same as before)
+        // Set click listeners
         button1.setOnClickListener { onButtonClick(it) }
         button2.setOnClickListener { onButtonClick(it) }
         button3.setOnClickListener { onButtonClick(it) }
@@ -93,10 +93,6 @@ class SimpleCalculator : AppCompatActivity() {
         val buttonText: String = button.text.toString()
         val display: TextView = findViewById(R.id.display)
         val currentText: String = display.text.toString()
-        val maxLength = if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) 16 else 11
-        if (currentText.length >= maxLength) {
-            return
-        }
 
         if (currentText == "0" && buttonText != "." && buttonText != "-") {
             display.text = buttonText
@@ -171,12 +167,12 @@ class SimpleCalculator : AppCompatActivity() {
         val currentText: String = display.text.toString()
 
         if (currentText.isNotEmpty()) {
-            // First, check for operators at the end
+            // Check for operators at the end
             val operatorPattern = Regex("([-+*/])(-?)(\\d+\\.?\\d*)$")
             val match = operatorPattern.find(currentText)
 
             if (match != null) {
-                // We found an operator followed by a number (possibly with a negative sign)
+                // Found an operator followed by a number (possibly with a negative sign)
                 val operator = match.groupValues[1]  // The main operator (-, +, *, /)
                 val signPart = match.groupValues[2]  // Possible negative sign after the operator
                 val number = match.groupValues[3]    // The number after the operator and sign
@@ -194,14 +190,13 @@ class SimpleCalculator : AppCompatActivity() {
                 } else if (operator == "*" || operator == "/") {
                     // For * and /, toggle the presence of negative sign
                     val prefixEndIndex = match.range.first + 1  // +1 to include the operator
-                    val newText: String
 
-                    if (signPart == "-") {
+                    val newText: String = if (signPart == "-") {
                         // If negative, remove the negative sign
-                        newText = currentText.substring(0, prefixEndIndex) + number
+                        currentText.substring(0, prefixEndIndex) + number
                     } else {
                         // If positive, add a negative sign
-                        newText = currentText.substring(0, prefixEndIndex) + "-" + number
+                        currentText.substring(0, prefixEndIndex) + "-" + number
                     }
 
                     display.text = newText
@@ -274,7 +269,7 @@ class SimpleCalculator : AppCompatActivity() {
                 }
                 finalResult.toString().trimEnd('0').trimEnd('.')
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return ""
         }
     }

@@ -37,9 +37,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
-
     fun changeActivity(view: View, activity: Class<*>) {
         val intent = Intent(this, activity)
         startActivity(intent)

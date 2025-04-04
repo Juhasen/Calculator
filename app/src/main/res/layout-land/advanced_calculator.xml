@@ -8,12 +8,14 @@
     android:background="@color/black"
     tools:context=".SimpleCalculator">
 
-    <EditText
+    <TextView
         android:id="@+id/resultPreview"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="12dp"
+        android:autoSizeMaxTextSize="40sp"
+        android:autoSizeMinTextSize="15sp"
+        android:autoSizeTextType="uniform"
         android:autofillHints="@string/displayResult"
         android:focusable="false"
         android:focusableInTouchMode="false"
@@ -21,38 +23,39 @@
         android:hint="@string/displayResult"
         android:inputType="none"
         android:textColor="@color/lime"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintBottom_toTopOf="@+id/guideline7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/display" />
+        app:layout_constraintTop_toTopOf="@+id/guideline6" />
 
-    <EditText
+    <TextView
         android:id="@+id/display"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+
         android:layout_marginHorizontal="20dp"
+        android:autoSizeMinTextSize="15sp"
+        android:autoSizeTextType="uniform"
         android:autofillHints=""
         android:focusable="false"
         android:focusableInTouchMode="true"
         android:gravity="end"
         android:inputType="none"
-        android:hint="@string/displayResult"
-        android:maxLength="16"
         android:maxLines="1"
         android:textColor="@color/white"
-        android:textSize="40sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/guideline4"
+        app:layout_constraintVertical_bias="0.416"
+        android:layout_height="0dp"
+        android:layout_width="0dp"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.4" />
+        app:layout_constraintGuide_percent="0.35" />
 
     <GridLayout
         android:layout_width="match_parent"
@@ -513,4 +516,25 @@
             android:textSize="24sp" />
 
     </GridLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.21" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.04" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.29" />
 </androidx.constraintlayout.widget.ConstraintLayout>

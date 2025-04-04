@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import net.objecthunter.exp4j.function.Function
 import kotlin.math.abs
 import kotlin.math.cos
-import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.tan
 
@@ -119,11 +118,6 @@ class AdvancedCalculator : AppCompatActivity() {
         val buttonText: String = button.text.toString()
         val display: TextView = findViewById(R.id.display)
         var currentText: String = display.text.toString()
-
-        val maxLength = if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) 20 else 12
-        if (currentText.length >= maxLength) {
-            return
-        }
 
         if (buttonText in listOf("sin", "cos", "tan", "log", "log10", "sqrt")) {
             if (currentText.isNotEmpty() && currentText.last().isDigit()) {
@@ -233,8 +227,6 @@ class AdvancedCalculator : AppCompatActivity() {
             }
             return
         }
-
-
 
         val newText: String = currentText + buttonText
         display.text = newText
@@ -374,11 +366,8 @@ class AdvancedCalculator : AppCompatActivity() {
                 }
             })
 
-            // Build and evaluate
             val result = expressionBuilder.build().evaluate()
 
-            // Return the result, ensuring it's formatted correctly
-            // In your evaluate function, modify the return line:
             return if (result.isNaN() || result.isInfinite()) {
                 ""
             } else {
